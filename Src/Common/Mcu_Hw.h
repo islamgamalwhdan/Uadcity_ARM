@@ -47,9 +47,13 @@ typedef union
 /**********************************************************************************************************************
  *  GLOBAL CONSTANT MACROS
  *********************************************************************************************************************/
-#define CORTEXM4_PERI_BASE_ADDRESS             0xE000E000
-#define APINT                                  *((volatile uint32*)(CORTEXM4_PERI_BASE_ADDRESS+0xD0C))
-#define INTCTRL                                *((volatile INTCTRL_Tag*)(CORTEXM4_PERI_BASE_ADDRESS+0xD04))
+#define CORE_PERI_BASE             0xE000E000
+#define APINT                                  *((volatile uint32*)(CORE_PERI_BASE+0xD0C))
+#define INTCTRL                                *((volatile INTCTRL_Tag*)(CORE_PERI_BASE+0xD04))
+
+#define VECTKEY_APINT                          0x05FA
+
+
 
 /**********************************************************************************************************************
  *  GLOBAL DATA PROTOTYPES
