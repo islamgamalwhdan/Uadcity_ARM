@@ -41,19 +41,19 @@
 	UART0         			  ,
 	UART1     
 	 
- }IRQ_Type ;
+ }IntCtrl_IRQNumType ;
  
 typedef struct{
-	IRQ_Type	        IRQn;
-	uint8					    Group_Pr;
-	uint8					    SubGroup_Pr;
+	IntCtrl_IRQNumType	  IRQn;
+	uint8					        Group_Pr;
+	uint8					        SubGroup_Pr;
 	
-}IRQ_CfgType;
+}IntCtrl_IRQCfgType;
 
 /**********************************************************************************************************************
  *  GLOBAL DATA PROTOTYPES
  *********************************************************************************************************************/
-extern const IRQ_CfgType IRQ_Cfg[NVIC_IQR_ACTIVE_NO] ;
+extern const IntCtrl_IRQCfgType IRQ_Cfg[NVIC_IQR_ACTIVE_NO] ;
 
  
 /**********************************************************************************************************************

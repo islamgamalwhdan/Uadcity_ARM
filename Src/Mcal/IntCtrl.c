@@ -32,11 +32,11 @@
 	
 
 
-#define NVIC_SetPriorityGrouping(IRQn , GR , SBG)\
-        ( NVIC_PRIORITY_BASE[IRQn]  = (uint8)( (( (GR)<<(GROUP_TYPE - GROUP_XXX )) | (SBG) ) << PRIBYTE_RESV_BITS) )
+#define IntCtrl_SetPriorityGrouping(Irqn , Gr , Sb)\
+        ( NVIC_PRIORITY_BASE[Irqn]  = (uint8)( (( (Gr)<<(GROUP_TYPE - GROUP_XXX )) | (Sb) ) << PRIBYTE_RESV_BITS) )
 
-#define NVIC_enableIRQ(IRQn)\
-        ( NVIC_IRQENABLE_BASE[ (IRQn) >> 3] |= 1<< ( (IRQn) % 8 )  )
+#define IntCtrl_EnableIRQ(Irqn)\
+        ( NVIC_IRQENABLE_BASE[ (Irqn) >> 3] |= 1<< ( (Irqn) % 8 )  )
 /**********************************************************************************************************************
  *  LOCAL DATA 
  *********************************************************************************************************************/
@@ -83,15 +83,15 @@ void IntCrtl_Init(void)
     /* Assign Group\Subgroup priority in NVIC Registers*/  
 		for(uint8 i =0 ; i < NVIC_IQR_ACTIVE_NO  ; i++)
 	{
-		uint8 IRQn                = IRQ_Cfg[i].IRQn ;
-		uint8 Group_Priority     = IRQ_Cfg[i].Group_Pr;
-		uint8 SubGroup_Priority  = IRQ_Cfg[i].SubGroup_Pr ;
+		uint8 irqN      = IRQ_Cfg[i].IRQn ;
+		uint8 group     = IRQ_Cfg[i].Group_Pr;
+		uint8 subGroup  = IRQ_Cfg[i].SubGroup_Pr ;
 		
-		NVIC_SetPriorityGrouping(IRQn , Group_Priority , SubGroup_Priority) ;
+		IntCtrl_SetPriorityGrouping(irqN , group  , subGroup) ;
 	
   /* Enable\Disable  Registers */
 		
-		NVIC_enableIRQ(IRQn) ;
+		IntCtrl_EnableIRQ(irqN) ;
 		
 	}
 
