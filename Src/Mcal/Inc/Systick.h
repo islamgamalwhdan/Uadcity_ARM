@@ -2,25 +2,28 @@
 
  *  FILE DESCRIPTION
  *  -------------------------------------------------------------------------------------------------------------------
- *         File:  IntCrtl.h
- *       Module:  IntCrtl
+ *         File:  Systick.h
+ *       Module:  Systick
  *
- *  Description:  header file for IntCrtl Module    
+ *  Description:  header file for Systick Module     
  *  
  *********************************************************************************************************************/
-#ifndef IntCrtl_H
-#define IntCrtl_H
+#ifndef SYSTICK_H
+#define SYSTICK_H
 
 /**********************************************************************************************************************
  * INCLUDES
  *********************************************************************************************************************/
 #include "Std_Types.h"
-#include "IntCtrl_Cfg.h"
 #include "Mcu_Hw.h"
+#include "Systick_cfg.h"
+#include "SysCtrl.h"   // toget system clock
 
 /**********************************************************************************************************************
  *  GLOBAL CONSTANT MACROS
  *********************************************************************************************************************/
+
+
 
 /**********************************************************************************************************************
  *  GLOBAL FUNCTION MACROS
@@ -30,55 +33,51 @@
 /**********************************************************************************************************************
  *  GLOBAL DATA TYPES AND STRUCTURES
  *********************************************************************************************************************/
- typedef enum
- {	
-	 GPIO_PORTA    = 0    ,
-	 GPIO_PORTB     			,
-	 GPIO_PORTC     			,
-	 GPIO_PORTD     			,
-	 GPIO_PORTE     			,
-	          
-	 
-	 
-	 UART0         			  ,
-	 UART1                ,
-	 
-	 
-	 TIMER0A_16_32 = 19
- }IntCtrl_IRQNumType ;
- 
-typedef struct{
-	IntCtrl_IRQNumType	  IRQn;
-	uint8					        Group_Pr;
-	uint8					        SubGroup_Pr;
-	
-}IntCtrl_IRQCfgType;
+typedef enum
+{
+	SYSTIC_FREQ_1KHZ  =    1   ,
+	SYSTIC_FREQ_100HZ =    10  ,
+	SYSTIC_FREQ_10HZ  =    100 ,
+}Systick_FreqType ;
+
+typedef enum 
+{
+	SYTICK_PIOSC_DIV4_CLK = 0 ,
+	SYTICK_SYSTEM_CLK     
+}Systick_ClKSourceType ;
+
+typedef enum
+{
+	SYSTIC_INTERRUPT_DISABLE  = 0 ,
+	SYSTIC_INTERRUPT_ENABLE
+}Systick_InterruptModeType ;
+
+
+typedef uint32 Systick_TicksType ;
+
+typedef struct
+{
+	Systick_FreqType           TickFreq    ;
+	Systick_ClKSourceType      ClockSource ;
+	SysCtr_CLockType           SystemClock ;
+	Systick_InterruptModeType  IntrMode    ;
+}Systick_ConfigType ;
 
 /**********************************************************************************************************************
  *  GLOBAL DATA PROTOTYPES
  *********************************************************************************************************************/
-extern const IntCtrl_IRQCfgType IRQ_Cfg[NVIC_IQR_ACTIVE_NO] ;
-
- 
+extern const Systick_ConfigType SystickCfg ;
 /**********************************************************************************************************************
  *  GLOBAL FUNCTION PROTOTYPES
  *********************************************************************************************************************/
+void Systick_Init(void) ;
+void Systick_Start(Systick_TicksType Ticks) ;
+void Systick_Disable(void) ;
+Systick_TicksType Systick_GetTicksElapsed(void);
+Systick_TicksType Systick_GetTicksRemaining(void);
  
-/******************************************************************************
-* \Syntax          : void IntCrtl_Init(void)                                      
-* \Description     : initialize Nvic\SCB Module by parsing the Configuration 
-*                    into Nvic\SCB registers                                    
-*                                                                             
-* \Sync\Async      : Synchronous                                               
-* \Reentrancy      : Non Reentrant                                             
-* \Parameters (in) : None                     
-* \Parameters (out): None                                                      
-* \Return value:   : None
-*******************************************************************************/
-void IntCrtl_Init(void);
- 
-#endif  /* IntCrtl_H */
+#endif  /* SYSTICK_H */
 
 /**********************************************************************************************************************
- *  END OF FILE: IntCrtl.h
+ *  END OF FILE: Systick.h
  *********************************************************************************************************************/

@@ -1,84 +1,91 @@
 /**********************************************************************************************************************
-
  *  FILE DESCRIPTION
- *  -------------------------------------------------------------------------------------------------------------------
- *         File:  IntCrtl.h
- *       Module:  IntCrtl
+ *  -----------------------------------------------------------------------------------------------------------------*/
+/**        \file  LedContrl.c
+ *        \brief  
  *
- *  Description:  header file for IntCrtl Module    
- *  
- *********************************************************************************************************************/
-#ifndef IntCrtl_H
-#define IntCrtl_H
-
-/**********************************************************************************************************************
- * INCLUDES
- *********************************************************************************************************************/
-#include "Std_Types.h"
-#include "IntCtrl_Cfg.h"
-#include "Mcu_Hw.h"
-
-/**********************************************************************************************************************
- *  GLOBAL CONSTANT MACROS
+ *      \details  
+ *
+ *
  *********************************************************************************************************************/
 
 /**********************************************************************************************************************
- *  GLOBAL FUNCTION MACROS
+ *  INCLUDES
  *********************************************************************************************************************/
-
+#include "LedControl.h"
+#include "Dio.h"
+#include "Systick.h"
+/**********************************************************************************************************************
+*  LOCAL MACROS CONSTANT\FUNCTION
+*********************************************************************************************************************/
 
 /**********************************************************************************************************************
- *  GLOBAL DATA TYPES AND STRUCTURES
+ *  LOCAL DATA 
  *********************************************************************************************************************/
- typedef enum
- {	
-	 GPIO_PORTA    = 0    ,
-	 GPIO_PORTB     			,
-	 GPIO_PORTC     			,
-	 GPIO_PORTD     			,
-	 GPIO_PORTE     			,
-	          
-	 
-	 
-	 UART0         			  ,
-	 UART1                ,
-	 
-	 
-	 TIMER0A_16_32 = 19
- }IntCtrl_IRQNumType ;
- 
-typedef struct{
-	IntCtrl_IRQNumType	  IRQn;
-	uint8					        Group_Pr;
-	uint8					        SubGroup_Pr;
-	
-}IntCtrl_IRQCfgType;
 
 /**********************************************************************************************************************
- *  GLOBAL DATA PROTOTYPES
+ *  GLOBAL DATA
  *********************************************************************************************************************/
-extern const IntCtrl_IRQCfgType IRQ_Cfg[NVIC_IQR_ACTIVE_NO] ;
 
- 
 /**********************************************************************************************************************
- *  GLOBAL FUNCTION PROTOTYPES
+ *  LOCAL FUNCTION PROTOTYPES
  *********************************************************************************************************************/
- 
+
+/**********************************************************************************************************************
+ *  LOCAL FUNCTIONS
+ *********************************************************************************************************************/
+
+/**********************************************************************************************************************
+ *  GLOBAL FUNCTIONS
+ *********************************************************************************************************************/
+
+
 /******************************************************************************
-* \Syntax          : void IntCrtl_Init(void)                                      
-* \Description     : initialize Nvic\SCB Module by parsing the Configuration 
-*                    into Nvic\SCB registers                                    
+* \Syntax          : Led_control(LedControl_TicksType TicksOn , LedControl_TicksType TicksOff)        
+* \Description     : Led control works As LED_ON for TicksOn  LED_OFF for TickOff                                
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Non Reentrant                                             
-* \Parameters (in) : None                     
+* \Parameters (in) : TicksOn , TicksOff                      
 * \Parameters (out): None                                                      
-* \Return value:   : None
+* \Return value:   : None                                
 *******************************************************************************/
-void IntCrtl_Init(void);
- 
-#endif  /* IntCrtl_H */
+void Led_control(LedControl_TicksType TicksOn , LedControl_TicksType TicksOff)
+{
+	static LedCtrl_LedStatusType ledStatus = LED_NOCTRL ;
+	
+	
+	if(ledStatus ==  LED_NOCTRL)
+	{
+		Dio_WriteChannel(DIO_FP1 , DIO_LEVEL_LOW) ;
+		Systick_Start(TicksOff) ;
+		ledStatus = LED_OFF ;
+	}
+	
+	
+	// Led ON for TicksOn
+	if(ledStatus == LED_OFF && (Systick_GetTicksElapsed() == TicksOff))
+	{
+		Dio_WriteChannel(DIO_FP1 , DIO_LEVEL_HIGH) ;
+		Systick_Start(TicksOn) ;
+		ledStatus = LED_ON;
+	}
+	
+	
+	// Led off for TicksOff
+	
+	if(ledStatus == LED_ON && (Systick_GetTicksElapsed() == TicksOn))
+	{
+		Dio_WriteChannel(DIO_FP1 , DIO_LEVEL_LOW) ;
+		Systick_Start(TicksOff) ;
+		ledStatus = LED_OFF;
+	}
+	
+	
+	
+}
+
 
 /**********************************************************************************************************************
- *  END OF FILE: IntCrtl.h
+ *  END OF FILE: LedControl.c
  *********************************************************************************************************************/

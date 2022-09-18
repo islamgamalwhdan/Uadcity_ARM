@@ -60,7 +60,9 @@ typedef unsigned long         uint32;        /*           0 .. 4294967295      *
 
 typedef float                 float32;
 typedef double                float64;
-
+typedef volatile uint32*     __IO_32_;
+typedef volatile uint16*     __IO_16_;
+typedef volatile uint8*      __IO_8_ ;
 #ifdef PLATFORM_SUPPORT_SINT64_UINT64 /*Valid only for gnu and C99 */
 typedef signed    long long  sint64;   /* -9223372036854775808 .. 9223372036854775807      */
 typedef unsigned  long long  uint64;   /*                    0 .. 18446744073709551615     */

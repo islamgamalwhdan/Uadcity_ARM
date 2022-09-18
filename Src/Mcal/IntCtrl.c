@@ -37,6 +37,9 @@
 
 #define IntCtrl_EnableIRQ(Irqn)\
         ( NVIC_IRQENABLE_BASE[ (Irqn) >> 3] |= 1<< ( (Irqn) % 8 )  )
+
+#define ENABLE_EXTERNAL_IRQN()          (set_PRIMASK(0))
+#define ENABLE_SYSTEM_EXCPTIONS()       (set_FAULTMASK(0))
 /**********************************************************************************************************************
  *  LOCAL DATA 
  *********************************************************************************************************************/
@@ -48,6 +51,21 @@
 /**********************************************************************************************************************
  *  LOCAL FUNCTION PROTOTYPES
  *********************************************************************************************************************/
+ 
+ 
+static __inline  void set_PRIMASK(uint32 priMask)
+{
+  register uint32 __regPriMask        __asm("primask");
+  __regPriMask = (priMask);
+}
+
+
+
+static __inline void set_FAULTMASK(uint32 faultMask)
+{
+  register uint32 __regFaultMask       __asm("faultmask");
+  __regFaultMask = (faultMask & (uint32)1U);
+}
 
 /**********************************************************************************************************************
  *  LOCAL FUNCTIONS
@@ -72,6 +90,12 @@
 void IntCrtl_Init(void)
 {
 
+	/* Enable system and external excptions */
+	
+	   ENABLE_EXTERNAL_IRQN() ;
+	
+	  ENABLE_SYSTEM_EXCPTIONS() ;
+	
 	/* Configure Grouping\SubGrouping System in APINT register in SCB*/
 	
 	       /* Note : writing on this register must be in WORD [32-bits] access */
@@ -80,7 +104,7 @@ void IntCrtl_Init(void)
 	            ((VECTKEY_APINT << 16) |       //Write VECTKEY
                       	(GROUP_TYPE << 8)) ; //Choose Prority grouping type
     
-    /* Assign Group\Subgroup priority in NVIC Registers*/  
+    /* Assign Group\Subgroup priority in NVIC Registers for each interrupt*/  
 		for(uint8 i =0 ; i < NVIC_IQR_ACTIVE_NO  ; i++)
 	{
 		uint8 irqN      = IRQ_Cfg[i].IRQn ;
@@ -89,14 +113,19 @@ void IntCrtl_Init(void)
 		
 		IntCtrl_SetPriorityGrouping(irqN , group  , subGroup) ;
 	
-  /* Enable\Disable  Registers */
+  /* Enable\Disable  Registers  At NVIC  */
 		
 		IntCtrl_EnableIRQ(irqN) ;
 		
 	}
 
 	
-
+/*1-PRIMASK =0 ;
+	//2-FAULTMASK = 0 ;
+	//3 - Select Group priority
+	//4-set level priorty [ group - sun groub] for each IRQn you want to activate it.
+	//5- Enable IRQn at NVIC 
+	//6- Enable IRQn at peripherial*/
 
 	
 
